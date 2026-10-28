@@ -42,7 +42,11 @@ def _remove_own_tv_devices(hass: HomeAssistant, entry: AppSyncConfigEntry) -> No
     """0.1.0 made devices of its own with the TVs' arc_launcher identifiers; the sensors now join Arc's devices."""
     registry = dr.async_get(hass)
     for device in dr.async_entries_for_config_entry(registry, entry.entry_id):
-        if any(domain == ARC_DOMAIN for domain, _ in device.identifiers):
+        if not any(domain == ARC_DOMAIN for domain, _ in device.identifiers):
+            continue
+        if device.config_entries == {entry.entry_id}:
+            registry.async_remove_device(device.id)
+        else:  # Home Assistant before devices belonged to one config entry: 0.1.0 joined Arc's own device.
             registry.async_update_device(device.id, remove_config_entry_id=entry.entry_id)
 
 
