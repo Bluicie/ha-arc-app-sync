@@ -62,13 +62,13 @@ def test_plan_kids() -> None:
 
 def _state(hass: HomeAssistant, device_id: str, key: str):
     entity_id = er.async_get(hass).async_get_entity_id("sensor", "arc_app_sync", f"{device_id}_app_sync_{key}")
-    return hass.states.get(entity_id)
+    return hass.states.get(entity_id) if entity_id else None
 
 
 async def _press(hass: HomeAssistant) -> None:
     entity_id = er.async_get(hass).async_get_entity_id("button", "arc_app_sync", _unique(hass, "sync_now"))
     await hass.services.async_call("button", "press", {"entity_id": entity_id}, blocking=True)
-    await hass.async_block_till_done()
+    await hass.async_block_till_done(wait_background_tasks=True)
 
 
 def _unique(hass: HomeAssistant, key: str) -> str:

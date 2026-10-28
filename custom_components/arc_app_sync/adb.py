@@ -50,6 +50,10 @@ ADB_ERRORS = (
 )
 
 
+def _reason(err: BaseException) -> str:
+    return str(err) or type(err).__name__
+
+
 class AdbError(Exception):
     """The TV could not be reached over ADB, or refused Home Assistant's key."""
 
@@ -84,7 +88,7 @@ class AdbTv:
             await self._device.connect(rsa_keys=[self._signer], auth_timeout_s=AUTH_TIMEOUT)
         except ADB_ERRORS as err:
             await self.close()
-            raise AdbError(f"{self.host}: {err or type(err).__name__}") from err
+            raise AdbError(f"{self.host}: {_reason(err)}") from err
 
     async def close(self) -> None:
         try:
@@ -96,7 +100,7 @@ class AdbTv:
         try:
             output = await self._device.shell(command, read_timeout_s=SHELL_TIMEOUT, timeout_s=SHELL_TIMEOUT)
         except ADB_ERRORS as err:
-            raise AdbError(f"{self.host}: {err or type(err).__name__}") from err
+            raise AdbError(f"{self.host}: {_reason(err)}") from err
         return str(output).replace("\r", "")
 
     async def packages(self, third_party: bool = False) -> set[str]:
@@ -116,13 +120,13 @@ class AdbTv:
         try:
             await self._device.pull(device_path, local_path, read_timeout_s=FILE_TIMEOUT)
         except ADB_ERRORS as err:
-            raise AdbError(f"{self.host}: pull {device_path}: {err or type(err).__name__}") from err
+            raise AdbError(f"{self.host}: pull {device_path}: {_reason(err)}") from err
 
     async def push(self, local_path: str, device_path: str) -> None:
         try:
             await self._device.push(local_path, device_path, read_timeout_s=FILE_TIMEOUT)
         except ADB_ERRORS as err:
-            raise AdbError(f"{self.host}: push {device_path}: {err or type(err).__name__}") from err
+            raise AdbError(f"{self.host}: push {device_path}: {_reason(err)}") from err
 
     async def install(self, package: str, apks: list[str]) -> str | None:
         """Install the APK splits like `adb install-multiple -r`; None on success, else the reason.
