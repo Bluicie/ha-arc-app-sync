@@ -1,0 +1,28 @@
+{
+  "entity": {
+    "button": {
+      "sync_now": { "default": "mdi:sync" }
+    },
+    "sensor": {
+      "apps_missing": { "default": "mdi:application-import" },
+      "apps_to_remove": { "default": "mdi:application-export" },
+      "last_app_sync": { "default": "mdi:clock-check-outline" },
+      "app_sync_status": {
+        "default": "mdi:television-guide",
+        "state": {
+          "ok": "mdi:check-circle-outline",
+          "attention": "mdi:alert-circle-outline",
+          "asleep": "mdi:sleep",
+          "unreachable": "mdi:lan-disconnect",
+          "leader_unavailable": "mdi:lan-disconnect"
+        }
+      }
+    },
+    "switch": {
+      "dry_run": {
+        "default": "mdi:test-tube",
+        "state": { "off": "mdi:test-tube-off" }
+      }
+    }
+  }
+}

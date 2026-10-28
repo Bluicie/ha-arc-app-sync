@@ -1,0 +1,14 @@
+{
+  "domain": "arc_app_sync",
+  "name": "Arc Launcher App Sync",
+  "codeowners": ["@Bluicie"],
+  "config_flow": true,
+  "dependencies": ["arc_launcher"],
+  "documentation": "https://github.com/Bluicie/ha-arc-app-sync",
+  "integration_type": "service",
+  "iot_class": "local_polling",
+  "issue_tracker": "https://github.com/Bluicie/ha-arc-app-sync/issues",
+  "requirements": ["adb-shell[async]==0.4.4"],
+  "single_config_entry": true,
+  "version": "0.1.0"
+}

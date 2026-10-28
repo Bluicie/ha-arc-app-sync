@@ -1,0 +1,46 @@
+name: Validate
+
+on:
+  push:
+  pull_request:
+  schedule:
+    - cron: "0 4 * * 1"
+  workflow_dispatch:
+
+env:
+  # The integration this one builds on; tests and hassfest need it next to arc_app_sync.
+  ARC_LAUNCHER_REF: v0.2.0
+
+jobs:
+  hassfest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Add arc_launcher
+        run: |
+          git clone --depth 1 --branch "$ARC_LAUNCHER_REF" https://github.com/Bluicie/ha-arc-launcher /tmp/arc
+          cp -r /tmp/arc/custom_components/arc_launcher custom_components/
+      - uses: home-assistant/actions/hassfest@master
+
+  hacs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: hacs/action@main
+        with:
+          category: integration
+
+  pytest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Add arc_launcher
+        run: |
+          git clone --depth 1 --branch "$ARC_LAUNCHER_REF" https://github.com/Bluicie/ha-arc-launcher /tmp/arc
+          cp -r /tmp/arc/custom_components/arc_launcher custom_components/
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: requirements_test.txt
+      - run: pip install -r requirements_test.txt
+      - run: pytest

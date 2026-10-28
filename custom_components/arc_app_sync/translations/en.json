@@ -1,0 +1,106 @@
+{
+  "config": {
+    "abort": {
+      "no_tvs": "Set up your TVs with the Arc Launcher integration first.",
+      "single_instance_allowed": "App sync is already set up. Use Configure to change it."
+    },
+    "error": {
+      "both_profiles": "A TV can have only one profile: pick it under Full or under Kids, not both.",
+      "leader_apps_unavailable": "Could not read the apps on the leader over ADB. On the TV, turn on network debugging and allow Home Assistant's key (\"Always allow\"), then open this step again. You can also type package names."
+    },
+    "step": {
+      "leader": {
+        "title": "Leader TV",
+        "description": "The other TVs get the apps of the leader. Automatic uses the TV the others follow in Arc Launcher (or the one that shares its layout).",
+        "data": { "leader": "Leader" }
+      },
+      "tvs": {
+        "title": "Profile per TV",
+        "description": "Full: mirror the apps of {leader}, plus the must-have apps. Kids: only the leader's apps on the kids allowlist. A TV in neither list is left alone.",
+        "data": { "full_tvs": "Full", "kids_tvs": "Kids" }
+      },
+      "apps": {
+        "title": "Apps and schedule",
+        "description": "The list shows the user-installed apps on {leader}; type a package name to add another one. Must-have and protected apps (Arc Launcher, Projectivy) and system apps are never removed.",
+        "data": {
+          "must_have": "Must-have apps",
+          "kids_allowlist": "Kids allowlist",
+          "max_removals": "Most removals per TV and run",
+          "sync_time": "Daily sync time",
+          "dry_run": "Dry run"
+        },
+        "data_description": {
+          "must_have": "Never removed anywhere, and installed on every full TV when the leader has them in any form.",
+          "kids_allowlist": "The only apps a kids TV gets and keeps.",
+          "max_removals": "When a TV would lose more apps in one run, nothing is removed there and it is reported.",
+          "sync_time": "Sleeping or unreachable TVs are skipped and reported.",
+          "dry_run": "Only report what would change. Turn off when the sensors show what you expect."
+        }
+      }
+    }
+  },
+  "options": {
+    "abort": {
+      "no_tvs": "Set up your TVs with the Arc Launcher integration first."
+    },
+    "error": {
+      "both_profiles": "A TV can have only one profile: pick it under Full or under Kids, not both.",
+      "leader_apps_unavailable": "Could not read the apps on the leader over ADB. On the TV, turn on network debugging and allow Home Assistant's key (\"Always allow\"), then open this step again. You can also type package names."
+    },
+    "step": {
+      "leader": {
+        "title": "Leader TV",
+        "description": "The other TVs get the apps of the leader. Automatic uses the TV the others follow in Arc Launcher (or the one that shares its layout).",
+        "data": { "leader": "Leader" }
+      },
+      "tvs": {
+        "title": "Profile per TV",
+        "description": "Full: mirror the apps of {leader}, plus the must-have apps. Kids: only the leader's apps on the kids allowlist. A TV in neither list is left alone.",
+        "data": { "full_tvs": "Full", "kids_tvs": "Kids" }
+      },
+      "apps": {
+        "title": "Apps and schedule",
+        "description": "The list shows the user-installed apps on {leader}; type a package name to add another one. Must-have and protected apps (Arc Launcher, Projectivy) and system apps are never removed.",
+        "data": {
+          "must_have": "Must-have apps",
+          "kids_allowlist": "Kids allowlist",
+          "max_removals": "Most removals per TV and run",
+          "sync_time": "Daily sync time",
+          "dry_run": "Dry run"
+        },
+        "data_description": {
+          "must_have": "Never removed anywhere, and installed on every full TV when the leader has them in any form.",
+          "kids_allowlist": "The only apps a kids TV gets and keeps.",
+          "max_removals": "When a TV would lose more apps in one run, nothing is removed there and it is reported.",
+          "sync_time": "Sleeping or unreachable TVs are skipped and reported.",
+          "dry_run": "Only report what would change. Turn off when the sensors show what you expect."
+        }
+      }
+    }
+  },
+  "entity": {
+    "button": {
+      "sync_now": { "name": "Sync apps now" }
+    },
+    "sensor": {
+      "apps_missing": { "name": "Apps missing" },
+      "apps_to_remove": { "name": "Apps to remove" },
+      "last_app_sync": { "name": "Last app sync" },
+      "app_sync_status": {
+        "name": "App sync status",
+        "state": {
+          "never": "Not synced yet",
+          "ok": "OK",
+          "dry_run": "Dry run",
+          "attention": "Needs attention",
+          "asleep": "Asleep, skipped",
+          "unreachable": "Unreachable, skipped",
+          "leader_unavailable": "Leader unavailable"
+        }
+      }
+    },
+    "switch": {
+      "dry_run": { "name": "Dry run" }
+    }
+  }
+}

@@ -1,0 +1,106 @@
+{
+  "config": {
+    "abort": {
+      "no_tvs": "Stel je tv's eerst in met de Arc Launcher-integratie.",
+      "single_instance_allowed": "App-synchronisatie is al ingesteld. Gebruik Configureren om iets te wijzigen."
+    },
+    "error": {
+      "both_profiles": "Een tv kan maar één profiel hebben: kies hem bij Volledig of bij Kinderen, niet bij allebei.",
+      "leader_apps_unavailable": "Kon de apps op de leider niet via ADB lezen. Zet op de tv netwerkfoutopsporing aan en sta de sleutel van Home Assistant toe (\"Altijd toestaan\"), en open deze stap dan opnieuw. Je kunt ook pakketnamen typen."
+    },
+    "step": {
+      "leader": {
+        "title": "Leidende tv",
+        "description": "De andere tv's krijgen de apps van de leider. Automatisch neemt de tv die de anderen volgen in Arc Launcher (of de tv die zijn indeling deelt).",
+        "data": { "leader": "Leider" }
+      },
+      "tvs": {
+        "title": "Profiel per tv",
+        "description": "Volledig: de apps van {leader} overnemen, plus de onmisbare apps. Kinderen: alleen apps van de leider die op de kinderlijst staan. Een tv in geen van beide lijsten blijft ongemoeid.",
+        "data": { "full_tvs": "Volledig", "kids_tvs": "Kinderen" }
+      },
+      "apps": {
+        "title": "Apps en planning",
+        "description": "De lijst toont de zelf geïnstalleerde apps op {leader}; typ een pakketnaam om een andere toe te voegen. Onmisbare en beschermde apps (Arc Launcher, Projectivy) en systeemapps worden nooit verwijderd.",
+        "data": {
+          "must_have": "Onmisbare apps",
+          "kids_allowlist": "Kinderlijst",
+          "max_removals": "Maximaal aantal verwijderingen per tv en run",
+          "sync_time": "Dagelijks synchroniseren om",
+          "dry_run": "Proefdraaien"
+        },
+        "data_description": {
+          "must_have": "Worden nergens verwijderd, en komen op elke volledige tv als de leider ze in welke vorm dan ook heeft.",
+          "kids_allowlist": "De enige apps die een kinder-tv krijgt en houdt.",
+          "max_removals": "Zou een tv in één run meer apps verliezen, dan wordt daar niets verwijderd en wordt het gemeld.",
+          "sync_time": "Slapende of onbereikbare tv's worden overgeslagen en gemeld.",
+          "dry_run": "Alleen melden wat er zou veranderen. Zet uit als de sensoren tonen wat je verwacht."
+        }
+      }
+    }
+  },
+  "options": {
+    "abort": {
+      "no_tvs": "Stel je tv's eerst in met de Arc Launcher-integratie."
+    },
+    "error": {
+      "both_profiles": "Een tv kan maar één profiel hebben: kies hem bij Volledig of bij Kinderen, niet bij allebei.",
+      "leader_apps_unavailable": "Kon de apps op de leider niet via ADB lezen. Zet op de tv netwerkfoutopsporing aan en sta de sleutel van Home Assistant toe (\"Altijd toestaan\"), en open deze stap dan opnieuw. Je kunt ook pakketnamen typen."
+    },
+    "step": {
+      "leader": {
+        "title": "Leidende tv",
+        "description": "De andere tv's krijgen de apps van de leider. Automatisch neemt de tv die de anderen volgen in Arc Launcher (of de tv die zijn indeling deelt).",
+        "data": { "leader": "Leider" }
+      },
+      "tvs": {
+        "title": "Profiel per tv",
+        "description": "Volledig: de apps van {leader} overnemen, plus de onmisbare apps. Kinderen: alleen apps van de leider die op de kinderlijst staan. Een tv in geen van beide lijsten blijft ongemoeid.",
+        "data": { "full_tvs": "Volledig", "kids_tvs": "Kinderen" }
+      },
+      "apps": {
+        "title": "Apps en planning",
+        "description": "De lijst toont de zelf geïnstalleerde apps op {leader}; typ een pakketnaam om een andere toe te voegen. Onmisbare en beschermde apps (Arc Launcher, Projectivy) en systeemapps worden nooit verwijderd.",
+        "data": {
+          "must_have": "Onmisbare apps",
+          "kids_allowlist": "Kinderlijst",
+          "max_removals": "Maximaal aantal verwijderingen per tv en run",
+          "sync_time": "Dagelijks synchroniseren om",
+          "dry_run": "Proefdraaien"
+        },
+        "data_description": {
+          "must_have": "Worden nergens verwijderd, en komen op elke volledige tv als de leider ze in welke vorm dan ook heeft.",
+          "kids_allowlist": "De enige apps die een kinder-tv krijgt en houdt.",
+          "max_removals": "Zou een tv in één run meer apps verliezen, dan wordt daar niets verwijderd en wordt het gemeld.",
+          "sync_time": "Slapende of onbereikbare tv's worden overgeslagen en gemeld.",
+          "dry_run": "Alleen melden wat er zou veranderen. Zet uit als de sensoren tonen wat je verwacht."
+        }
+      }
+    }
+  },
+  "entity": {
+    "button": {
+      "sync_now": { "name": "Apps nu synchroniseren" }
+    },
+    "sensor": {
+      "apps_missing": { "name": "Ontbrekende apps" },
+      "apps_to_remove": { "name": "Te verwijderen apps" },
+      "last_app_sync": { "name": "Laatste app-synchronisatie" },
+      "app_sync_status": {
+        "name": "Status app-synchronisatie",
+        "state": {
+          "never": "Nog niet gesynchroniseerd",
+          "ok": "OK",
+          "dry_run": "Proefdraaien",
+          "attention": "Vraagt aandacht",
+          "asleep": "Slaapt, overgeslagen",
+          "unreachable": "Onbereikbaar, overgeslagen",
+          "leader_unavailable": "Leider niet beschikbaar"
+        }
+      }
+    },
+    "switch": {
+      "dry_run": { "name": "Proefdraaien" }
+    }
+  }
+}

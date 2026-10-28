@@ -1,0 +1,7 @@
+.venv/
+__pycache__/
+.pytest_cache/
+*.pyc
+
+# Copied in for tests and hassfest (see .github/workflows/validate.yml).
+custom_components/arc_launcher/
