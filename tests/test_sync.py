@@ -15,7 +15,7 @@ from custom_components.arc_app_sync.const import (
 )
 from custom_components.arc_app_sync.sync import plan_apps
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers import entity_registry as er
+from homeassistant.helpers import device_registry as dr, entity_registry as er
 from homeassistant.util import dt as dt_util
 
 from .conftest import BEDROOM, KIDS, LIVING, OPTIONS, FakeTv
@@ -79,9 +79,12 @@ def _unique(hass: HomeAssistant, key: str) -> str:
 async def test_entities_before_first_run(hass: HomeAssistant, setup_entry: MockConfigEntry) -> None:
     assert _state(hass, BEDROOM[1], "app_sync_status").state == "never"
     assert _state(hass, BEDROOM[1], "apps_missing").state == "unknown"
-    # The sensors sit on the TV's own Arc Launcher device.
-    entry = er.async_get(hass).async_get(_state(hass, KIDS[1], "apps_missing").entity_id)
-    assert entry.device_id is not None
+    # The sensors sit on the TV's own Arc Launcher device; no devices of this integration besides the service one.
+    entity = er.async_get(hass).async_get(_state(hass, KIDS[1], "apps_missing").entity_id)
+    arc_device = dr.async_get(hass).async_get_device(identifiers={("arc_launcher", KIDS[1])})
+    assert entity.device_id == arc_device.id
+    own = dr.async_entries_for_config_entry(dr.async_get(hass), setup_entry.entry_id)
+    assert [device.identifiers for device in own] == [{("arc_app_sync", setup_entry.entry_id)}]
     assert _state(hass, LIVING[1], "apps_missing") is None
 
 
@@ -191,3 +194,15 @@ async def test_dry_run_switch(hass: HomeAssistant, setup_entry: MockConfigEntry)
     await hass.async_block_till_done()
     assert hass.states.get(entity_id).state == "off"
     assert setup_entry.options[CONF_DRY_RUN] is False
+
+
+async def test_removes_devices_of_0_1_0(hass: HomeAssistant, arc_tvs, fake_adb: dict[str, FakeTv]) -> None:
+    entry = MockConfigEntry(domain="arc_app_sync", data={}, options=dict(OPTIONS))
+    entry.add_to_hass(hass)
+    registry = dr.async_get(hass)
+    # 0.1.0 put the TV sensors on a device of its own that carries the TV's arc_launcher identifier.
+    stale = registry.async_get_or_create(config_entry_id=entry.entry_id, identifiers={("arc_launcher", "dev-gone")})
+    assert await hass.config_entries.async_setup(entry.entry_id)
+    await hass.async_block_till_done()
+    assert registry.async_get(stale.id) is None
+    assert registry.async_get_device(identifiers={("arc_launcher", KIDS[1])}).config_entries == {arc_tvs[2].entry_id}

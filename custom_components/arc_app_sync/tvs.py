@@ -10,12 +10,14 @@ from urllib.parse import urlparse
 from homeassistant.config_entries import ConfigEntryState
 from homeassistant.const import CONF_HOST
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers import device_registry as dr
 
 from .const import ARC_DOMAIN
 
 
 @dataclass(frozen=True)
 class Tv:
+    entry_id: str
     device_id: str
     name: str
     host: str
@@ -30,8 +32,16 @@ def arc_tvs(hass: HomeAssistant) -> dict[str, Tv]:
         status: dict[str, Any] = {}
         if entry.state is ConfigEntryState.LOADED and getattr(entry.runtime_data, "data", None):
             status = entry.runtime_data.data
-        tvs[device_id] = Tv(device_id, status.get("name") or entry.title, entry.data[CONF_HOST], status)
+        tvs[device_id] = Tv(entry.entry_id, device_id, status.get("name") or entry.title, entry.data[CONF_HOST], status)
     return tvs
+
+
+def arc_device(hass: HomeAssistant, tv: Tv) -> dr.DeviceEntry | None:
+    """The TV's device of the arc_launcher integration, which this integration's entities join."""
+    for device in dr.async_entries_for_config_entry(dr.async_get(hass), tv.entry_id):
+        if (ARC_DOMAIN, tv.device_id) in device.identifiers:
+            return device
+    return None
 
 
 def derive_leader(tvs: dict[str, Tv]) -> str | None:

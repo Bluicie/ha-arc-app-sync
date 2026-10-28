@@ -15,6 +15,7 @@ from homeassistant.util import dt as dt_util
 from .const import STATUS_NEVER, STATUSES
 from .coordinator import AppSyncConfigEntry, profiles
 from .entity import TvEntity
+from .tvs import arc_device, arc_tvs
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -65,16 +66,20 @@ async def async_setup_entry(
     coordinator = entry.runtime_data
     # Every TV with a profile, also one that is the leader right now: the leader can change.
     targets = profiles(dict(entry.options), None)
+    tvs = arc_tvs(hass)
+    devices = {device_id: arc_device(hass, tvs[device_id]) if device_id in tvs else None for device_id in targets}
     async_add_entities(
-        AppSyncSensor(coordinator, device_id, description) for device_id in targets for description in SENSORS
+        AppSyncSensor(coordinator, device_id, device, description)
+        for device_id, device in devices.items()
+        for description in SENSORS
     )
 
 
 class AppSyncSensor(TvEntity, SensorEntity):
     entity_description: AppSyncSensorDescription
 
-    def __init__(self, coordinator, device_id: str, description: AppSyncSensorDescription) -> None:
-        super().__init__(coordinator, device_id, description.key)
+    def __init__(self, coordinator, device_id: str, device, description: AppSyncSensorDescription) -> None:
+        super().__init__(coordinator, device_id, device, description.key)
         self.entity_description = description
 
     @property

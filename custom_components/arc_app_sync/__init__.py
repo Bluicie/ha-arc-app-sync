@@ -4,16 +4,18 @@ from __future__ import annotations
 
 from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers import device_registry as dr
 from homeassistant.helpers.event import async_track_time_change
 from homeassistant.util import dt as dt_util
 
-from .const import CONF_DRY_RUN, CONF_SYNC_TIME, DEFAULT_SYNC_TIME
+from .const import ARC_DOMAIN, CONF_DRY_RUN, CONF_SYNC_TIME, DEFAULT_SYNC_TIME
 from .coordinator import AppSyncConfigEntry, AppSyncCoordinator
 
 PLATFORMS = [Platform.BUTTON, Platform.SENSOR, Platform.SWITCH]
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: AppSyncConfigEntry) -> bool:
+    _remove_own_tv_devices(hass, entry)
     coordinator = AppSyncCoordinator(hass, entry)
     await coordinator.async_config_entry_first_refresh()
     entry.runtime_data = coordinator
@@ -34,6 +36,14 @@ async def async_setup_entry(hass: HomeAssistant, entry: AppSyncConfigEntry) -> b
 
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     return True
+
+
+def _remove_own_tv_devices(hass: HomeAssistant, entry: AppSyncConfigEntry) -> None:
+    """0.1.0 made devices of its own with the TVs' arc_launcher identifiers; the sensors now join Arc's devices."""
+    registry = dr.async_get(hass)
+    for device in dr.async_entries_for_config_entry(registry, entry.entry_id):
+        if any(domain == ARC_DOMAIN for domain, _ in device.identifiers):
+            registry.async_update_device(device.id, remove_config_entry_id=entry.entry_id)
 
 
 async def _async_options_updated(hass: HomeAssistant, entry: AppSyncConfigEntry, before: dict) -> None:

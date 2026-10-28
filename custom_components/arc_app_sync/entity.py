@@ -4,10 +4,10 @@ from __future__ import annotations
 
 from typing import Any
 
-from homeassistant.helpers.device_registry import DeviceEntryType, DeviceInfo
+from homeassistant.helpers.device_registry import DeviceEntry, DeviceEntryType, DeviceInfo
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
-from .const import ARC_DOMAIN, DOMAIN
+from .const import DOMAIN
 from .coordinator import AppSyncCoordinator
 
 
@@ -35,12 +35,16 @@ class TvEntity(CoordinatorEntity[AppSyncCoordinator]):
 
     _attr_has_entity_name = True
 
-    def __init__(self, coordinator: AppSyncCoordinator, device_id: str, key: str) -> None:
+    def __init__(
+        self, coordinator: AppSyncCoordinator, device_id: str, device: DeviceEntry | None, key: str
+    ) -> None:
         super().__init__(coordinator)
         self.device_id = device_id
         self._attr_translation_key = key
         self._attr_unique_id = f"{device_id}_app_sync_{key}"
-        self._attr_device_info = DeviceInfo(identifiers={(ARC_DOMAIN, device_id)})
+        # Joins the device like a helper does: device_info with arc_launcher's identifiers would make a device of
+        # this integration's own.
+        self.device_entry = device
 
     @property
     def result(self) -> dict[str, Any] | None:
