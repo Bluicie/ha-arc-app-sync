@@ -131,7 +131,9 @@ def fake_tvs() -> dict[str, FakeTv]:
             system={"android", "com.android.vending", "com.netflix.ninja"},
             user={"com.disney.disneyplus", "com.stremio.one", "com.spocky.projengmenu"},
         ),
-        BEDROOM[2]: FakeTv(BEDROOM[2], user={"com.stremio.one", "com.game.crossy", "com.bluicie.arc"}),
+        BEDROOM[2]: FakeTv(
+            BEDROOM[2], user={"com.stremio.one", "com.game.crossy", "com.bluicie.arc", "com.spocky.projengmenu"}
+        ),
         KIDS[2]: FakeTv(KIDS[2], user={"com.google.android.youtube.tv", "com.tf1.plus"}),
     }
 

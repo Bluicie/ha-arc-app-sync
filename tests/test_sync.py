@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from datetime import timedelta
 
-from freezegun.api import FrozenDateTimeFactory
 from pytest_homeassistant_custom_component.common import MockConfigEntry, async_fire_time_changed
 
 from custom_components.arc_app_sync.const import (
@@ -173,13 +172,12 @@ async def test_leader_without_apps_is_not_mirrored(
 
 
 async def test_daily_schedule(
-    hass: HomeAssistant, setup_entry: MockConfigEntry, fake_adb: dict[str, FakeTv], freezer: FrozenDateTimeFactory
+    hass: HomeAssistant, setup_entry: MockConfigEntry, fake_adb: dict[str, FakeTv]
 ) -> None:
     now = dt_util.now()
     target = now.replace(hour=19, minute=0, second=0, microsecond=0)
     if target <= now:
         target += timedelta(days=1)
-    freezer.move_to(target)
     async_fire_time_changed(hass, target)
     await hass.async_block_till_done()
     assert _state(hass, BEDROOM[1], "app_sync_status").state == "dry_run"
