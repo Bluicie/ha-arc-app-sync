@@ -2,13 +2,14 @@
 
 from __future__ import annotations
 
-from datetime import timedelta
+from unittest.mock import patch
 
-from pytest_homeassistant_custom_component.common import MockConfigEntry, async_fire_time_changed
+from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from custom_components.arc_app_sync.const import (
     CONF_DRY_RUN,
     CONF_MAX_REMOVALS,
+    CONF_SYNC_TIME,
     PROFILE_FULL,
     PROFILE_KIDS,
 )
@@ -17,7 +18,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers import entity_registry as er
 from homeassistant.util import dt as dt_util
 
-from .conftest import BEDROOM, KIDS, LIVING, FakeTv
+from .conftest import BEDROOM, KIDS, LIVING, OPTIONS, FakeTv
 
 LEADER_ALL = {"android", "com.netflix.ninja", "com.a", "com.b"}
 LEADER_3P = {"com.a", "com.b"}
@@ -171,14 +172,14 @@ async def test_leader_without_apps_is_not_mirrored(
     assert _state(hass, BEDROOM[1], "app_sync_status").state == "leader_unavailable"
 
 
-async def test_daily_schedule(
-    hass: HomeAssistant, setup_entry: MockConfigEntry, fake_adb: dict[str, FakeTv]
-) -> None:
-    now = dt_util.now()
-    target = now.replace(hour=19, minute=0, second=0, microsecond=0)
-    if target <= now:
-        target += timedelta(days=1)
-    async_fire_time_changed(hass, target)
+async def test_daily_schedule(hass: HomeAssistant, arc_tvs, fake_adb: dict[str, FakeTv]) -> None:
+    entry = MockConfigEntry(domain="arc_app_sync", data={}, options={**OPTIONS, CONF_SYNC_TIME: "04:30:00"})
+    entry.add_to_hass(hass)
+    with patch("custom_components.arc_app_sync.async_track_time_change") as track:
+        assert await hass.config_entries.async_setup(entry.entry_id)
+        await hass.async_block_till_done()
+    assert track.call_args.kwargs == {"hour": 4, "minute": 30, "second": 0}
+    await track.call_args.args[1](dt_util.now())
     await hass.async_block_till_done()
     assert _state(hass, BEDROOM[1], "app_sync_status").state == "dry_run"
 
